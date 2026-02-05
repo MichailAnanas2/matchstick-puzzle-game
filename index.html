@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Тренировка мозга: Спички</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Yandex Games SDK -->
+    <script src="https://yandex.ru/games/sdk/v2"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Экран загрузки / Главное меню -->
+        <div id="screen-start" class="screen active">
+            <h1 id="game-title">Тренировка мозга: Спички</h1>
+            <div class="menu-buttons">
+                <button id="btn-play" class="primary">Играть</button>
+                <button id="btn-continue" class="secondary hidden">Продолжить</button>
+            </div>
+            <div class="settings">
+                <button id="btn-lang" class="icon-btn">🌐 RU</button>
+            </div>
+        </div>
+
+        <!-- Экран игры -->
+        <div id="screen-game" class="screen">
+            <header>
+                <div class="stats">
+                    <span id="label-puzzle-index">Задача 1 / 100</span>
+                    <span id="game-timer">00:00</span>
+                </div>
+                <div class="leader-info">
+                    <div id="best-local">Мой рекорд: --:--</div>
+                    <div id="best-global">Мировой: --:--</div>
+                </div>
+            </header>
+            
+            <div id="instruction">Переставь ровно ОДНУ спичку</div>
+            
+            <div id="match-field">
+                <!-- Сюда будут генерироваться токены (цифры и знаки) -->
+            </div>
+
+            <div class="game-controls">
+                <button id="btn-check" class="primary">Проверить</button>
+                <button id="btn-hint" class="reward-btn">💡 Подсказка</button>
+                <button id="btn-reset" class="secondary">↺ Сброс</button>
+            </div>
+            <button id="btn-back" class="text-btn">Меню</button>
+        </div>
+
+        <!-- Экран успеха -->
+        <div id="screen-success" class="screen">
+            <h2 id="msg-success">Молодец!</h2>
+            <div class="result-stats">
+                <p>Время: <span id="current-time-res"></span></p>
+                <p>Ваш лучший: <span id="local-best-res"></span></p>
+                <p>Мировой рекорд: <span id="global-best-res"></span></p>
+            </div>
+            <button id="btn-next" class="primary">Дальше</button>
+        </div>
+
+        <!-- Модальное окно -->
+        <div id="modal" class="modal hidden">
+            <div class="modal-content">
+                <div id="modal-icon"></div>
+                <p id="modal-text"></p>
+                <button id="modal-btn" class="primary">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drag cursor placeholder -->
+    <div id="drag-ghost"></div>
+
+    <script src="i18n.js"></script>
+    <script src="y.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

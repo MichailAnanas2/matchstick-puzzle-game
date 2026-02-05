@@ -1,0 +1,619 @@
+:root {
+    --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    --card-bg: rgba(255, 255, 255, 0.08);
+    --card-border: rgba(255, 255, 255, 0.15);
+    --match-wood: linear-gradient(180deg, #f5d17a 0%, #d97706 50%, #a55a10 100%);
+    --match-head: radial-gradient(circle at 30% 30%, #ff6b6b, #b91c1c);
+    --slot-empty: rgba(255, 255, 255, 0.08);
+    --slot-hover: rgba(255, 255, 255, 0.15);
+    --primary: #6366f1;
+    --primary-glow: rgba(99, 102, 241, 0.4);
+    --success: #10b981;
+    --accent: #f59e0b;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+}
+
+* { 
+    box-sizing: border-box; 
+    touch-action: none; 
+    user-select: none; 
+    -webkit-tap-highlight-color: transparent; 
+}
+
+body { 
+    margin: 0; 
+    font-family: 'Segoe UI', -apple-system, system-ui, sans-serif; 
+    background: var(--bg-gradient);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+#app { 
+    width: 100%; 
+    max-width: 900px; 
+    min-height: 100vh;
+    margin: 0 auto;
+    position: relative; 
+    padding: 20px;
+}
+
+/* Screens */
+.screen { 
+    position: absolute; 
+    inset: 0; 
+    display: none; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 30px;
+    animation: fadeIn 0.4s ease-out;
+}
+.screen.active { display: flex; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Title */
+#game-title {
+    font-size: clamp(28px, 6vw, 48px);
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    margin-bottom: 40px;
+    text-shadow: 0 4px 30px rgba(99, 102, 241, 0.3);
+}
+
+/* ===== 7-SEGMENT DISPLAY ===== */
+#match-field { 
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    align-items: center; 
+    padding: 40px 30px;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    border-radius: 24px; 
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    margin: 20px 0;
+    gap: 15px;
+}
+
+/* Token container for digit or operator */
+.token {
+    position: relative;
+}
+
+/* ===== DIGIT: 7-segment display ===== */
+.digit {
+    width: 52px;
+    height: 90px;
+    position: relative;
+}
+
+/* Individual segment slot */
+.segment {
+    position: absolute;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+/* Horizontal segments - thinner and wider */
+.segment.h {
+    width: 32px;
+    height: 8px;
+}
+
+/* Vertical segments - taller and thinner */
+.segment.v {
+    width: 8px;
+    height: 32px;
+}
+
+/* ===== SEGMENT POSITIONS ===== */
+/* a - top horizontal */
+.segment.seg-a { 
+    top: 0; 
+    left: 10px; 
+}
+
+/* b - top right vertical */
+.segment.seg-b { 
+    top: 10px; 
+    left: 44px; 
+}
+
+/* c - bottom right vertical */
+.segment.seg-c { 
+    top: 48px; 
+    left: 44px; 
+}
+
+/* d - bottom horizontal */
+.segment.seg-d { 
+    top: 82px; 
+    left: 10px; 
+}
+
+/* e - bottom left vertical */
+.segment.seg-e { 
+    top: 48px; 
+    left: 0; 
+}
+
+/* f - top left vertical */
+.segment.seg-f { 
+    top: 10px; 
+    left: 0; 
+}
+
+/* g - middle horizontal */
+.segment.seg-g { 
+    top: 41px; 
+    left: 10px; 
+}
+
+/* Empty slot style */
+.segment.empty {
+    background: var(--slot-empty);
+    border: 1px dashed rgba(255,255,255,0.15);
+}
+.segment.empty:hover {
+    background: var(--slot-hover);
+    border-color: var(--primary);
+}
+
+/* Active match (with matchstick) */
+.segment.active {
+    background: var(--match-wood);
+    border: none;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+/* Match head */
+.segment.active::before {
+    content: '';
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    background: var(--match-head);
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(185, 28, 28, 0.5);
+}
+
+.segment.h.active::before {
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.segment.v.active::before {
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* ===== OPERATOR TOKENS ===== */
+.operator {
+    width: 44px;
+    height: 90px;
+    position: relative;
+}
+
+.op-slot {
+    position: absolute;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.op-slot.h {
+    width: 32px;
+    height: 8px;
+    top: 41px;
+    left: 6px;
+}
+
+.op-slot.v {
+    width: 8px;
+    height: 32px;
+    top: 29px;
+    left: 18px;
+}
+
+.op-slot.empty {
+    background: var(--slot-empty);
+    border: 1px dashed rgba(255,255,255,0.15);
+}
+
+.op-slot.active {
+    background: var(--match-wood);
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.5);
+}
+
+.op-slot.active::before {
+    content: '';
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    background: var(--match-head);
+    border-radius: 50%;
+}
+
+.op-slot.h.active::before {
+    right: -5px;
+    top: -1px;
+}
+
+.op-slot.v.active::before {
+    bottom: -5px;
+    left: -1px;
+}
+
+/* Equals sign (fixed, non-interactive) */
+.equals {
+    width: 44px;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+
+.eq-bar {
+    width: 32px;
+    height: 8px;
+    background: var(--match-wood);
+    border-radius: 3px;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.5);
+}
+
+/* ===== BUTTONS ===== */
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 280px;
+}
+
+button { 
+    padding: 16px 32px; 
+    border: none; 
+    border-radius: 16px; 
+    font-size: 18px; 
+    font-weight: 600;
+    cursor: pointer; 
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(255,255,255,0.1), transparent);
+    pointer-events: none;
+}
+
+button:hover { 
+    transform: translateY(-2px);
+}
+
+button:active { 
+    transform: scale(0.98) translateY(0);
+}
+
+button.primary { 
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white; 
+    box-shadow: 0 8px 20px var(--primary-glow);
+}
+
+button.primary:hover {
+    box-shadow: 0 12px 28px var(--primary-glow);
+}
+
+button.secondary { 
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+    border: 1px solid var(--card-border);
+}
+
+button.icon-btn { 
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    color: var(--text);
+    padding: 12px 20px;
+    font-size: 16px;
+}
+
+button.text-btn { 
+    background: transparent; 
+    color: var(--text-muted);
+    font-size: 16px;
+    padding: 10px 20px;
+}
+
+button.reward-btn { 
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+}
+
+.hidden { display: none !important; }
+
+/* ===== HEADER ===== */
+header { 
+    width: 100%; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start; 
+    margin-bottom: 20px;
+    padding: 20px;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+}
+
+.stats { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 4px; 
+}
+
+#label-puzzle-index { 
+    font-weight: 700; 
+    font-size: 22px; 
+    color: var(--text);
+}
+
+#game-timer { 
+    font-family: 'Courier New', monospace;
+    font-size: 28px; 
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.leader-info { 
+    text-align: right; 
+    font-size: 14px; 
+    color: var(--text-muted);
+}
+
+.leader-info div {
+    margin-bottom: 4px;
+}
+
+#instruction {
+    font-size: 20px;
+    color: var(--text);
+    font-weight: 500;
+    text-align: center;
+    padding: 16px 24px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    margin-bottom: 10px;
+}
+
+/* ===== GAME CONTROLS ===== */
+.game-controls {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* ===== DRAG GHOST ===== */
+#drag-ghost { 
+    pointer-events: none; 
+    position: fixed; 
+    z-index: 1000; 
+    opacity: 0.95;
+    border-radius: 3px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: none;
+}
+
+#drag-ghost.v {
+    width: 8px;
+    height: 32px;
+    background: var(--match-wood);
+}
+
+#drag-ghost.h {
+    width: 32px;
+    height: 8px;
+    background: var(--match-wood);
+}
+
+#drag-ghost::before {
+    content: '';
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    background: var(--match-head);
+    border-radius: 50%;
+}
+
+#drag-ghost.v::before {
+    bottom: -5px;
+    left: -1px;
+}
+
+#drag-ghost.h::before {
+    right: -5px;
+    top: -1px;
+}
+
+/* ===== RESULT SCREEN ===== */
+.result-stats { 
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    padding: 30px; 
+    border-radius: 20px; 
+    margin: 30px 0; 
+    width: 100%; 
+    max-width: 320px;
+}
+
+.result-stats p { 
+    display: flex; 
+    justify-content: space-between; 
+    margin: 12px 0; 
+    font-size: 18px;
+    color: var(--text-muted);
+}
+
+.result-stats span { 
+    font-weight: bold; 
+    color: var(--accent);
+}
+
+#msg-success {
+    font-size: 42px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Settings */
+.settings {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+    #match-field { 
+        padding: 25px 15px;
+        gap: 8px;
+    }
+    
+    .digit {
+        width: 36px;
+        height: 62px;
+    }
+    
+    .segment.h {
+        width: 22px;
+        height: 6px;
+    }
+    
+    .segment.v {
+        width: 6px;
+        height: 22px;
+    }
+    
+    .segment.seg-a { top: 0; left: 7px; }
+    .segment.seg-b { top: 7px; left: 30px; }
+    .segment.seg-c { top: 33px; left: 30px; }
+    .segment.seg-d { top: 56px; left: 7px; }
+    .segment.seg-e { top: 33px; left: 0; }
+    .segment.seg-f { top: 7px; left: 0; }
+    .segment.seg-g { top: 28px; left: 7px; }
+    
+    .segment.active::before {
+        width: 9px;
+        height: 9px;
+    }
+    
+    .operator {
+        width: 30px;
+        height: 62px;
+    }
+    
+    .op-slot.h { width: 22px; height: 6px; top: 28px; left: 4px; }
+    .op-slot.v { width: 6px; height: 22px; top: 20px; left: 12px; }
+    
+    .equals { width: 30px; height: 62px; gap: 10px; }
+    .eq-bar { width: 22px; height: 6px; }
+    
+    button {
+        padding: 14px 24px;
+        font-size: 16px;
+    }
+    
+    #label-puzzle-index { font-size: 18px; }
+    #game-timer { font-size: 24px; }
+}
+
+/* Highlight for valid drop targets */
+.segment.highlight, .op-slot.highlight {
+    background: rgba(99, 102, 241, 0.3) !important;
+    border: 2px dashed var(--primary) !important;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* ===== MODAL ===== */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 40px;
+    text-align: center;
+    max-width: 360px;
+    width: 90%;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    animation: modalPop 0.3s ease-out;
+}
+
+@keyframes modalPop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+#modal-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+#modal-text {
+    font-size: 20px;
+    color: var(--text);
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+.modal-content button {
+    min-width: 140px;
+}
