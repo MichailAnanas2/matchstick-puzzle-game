@@ -432,18 +432,26 @@ class Game {
         if (!this.draggedSlot) return;
         
         // Check if dropped on a valid slot
-        const x = e.clientX;
-        const y = e.clientY;
-        const elements = document.elementsFromPoint(x, y);
+        const x = e.clientX || (e.changedTouches && e.changedTouches[0].clientX) || 0;
+        const y = e.clientY || (e.changedTouches && e.changedTouches[0].clientY) || 0;
         
+        // Ищем ближайший пустой слот (магнитное прилипание)
+        const emptySlots = document.querySelectorAll('.segment.empty, .op-slot.empty');
         let dropTarget = null;
-        for (const el of elements) {
-            if ((el.classList.contains('segment') || el.classList.contains('op-slot')) && 
-                el.classList.contains('empty') && el !== this.draggedSlot) {
-                dropTarget = el;
-                break;
+        let minDst = Infinity;
+        const threshold = 60; // Радиус захвата в пикселях
+
+        emptySlots.forEach(slot => {
+            const rect = slot.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const dst = Math.hypot(x - centerX, y - centerY);
+            
+            if (dst < minDst && dst < threshold) {
+                minDst = dst;
+                dropTarget = slot;
             }
-        }
+        });
 
         if (dropTarget) {
             dropTarget.classList.remove('empty', 'highlight');
@@ -643,6 +651,9 @@ class Game {
 
 // ===== INIT =====
 window.onload = async () => {
+    // Disable context menu
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
     await initYandex();
     window.game = new Game();
 };
