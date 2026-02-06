@@ -173,6 +173,8 @@ class Game {
         this.draggedSlot = null;
         this.initialState = {};
         this.currentPuzzleStart = '';
+        this.isPaused = false;
+        this.pauseStart = 0;
         
         this.initUI();
         updateUILabels();
@@ -180,6 +182,31 @@ class Game {
         
         // Initial fit
         window.addEventListener('resize', () => this.fitToScreen());
+        
+        // Pause on visibility change (minimize)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.pause();
+            } else {
+                this.resume();
+            }
+        });
+    }
+
+    pause() {
+        if (this.isPaused) return;
+        this.isPaused = true;
+        this.pauseStart = Date.now();
+        clearInterval(this.timerInterval);
+    }
+
+    resume() {
+        if (!this.isPaused) return;
+        this.isPaused = false;
+        const diff = Date.now() - this.pauseStart;
+        this.startTime += diff;
+        this.timerInterval = setInterval(() => this.updateTimer(), 1000);
+        this.updateTimer();
     }
 
     initUI() {
@@ -432,18 +459,26 @@ class Game {
         if (!this.draggedSlot) return;
         
         // Check if dropped on a valid slot
-        const x = e.clientX;
-        const y = e.clientY;
-        const elements = document.elementsFromPoint(x, y);
+        const x = e.clientX || (e.changedTouches && e.changedTouches[0].clientX) || 0;
+        const y = e.clientY || (e.changedTouches && e.changedTouches[0].clientY) || 0;
         
+        // Ищем ближайший пустой слот (магнитное прилипание)
+        const emptySlots = document.querySelectorAll('.segment.empty, .op-slot.empty');
         let dropTarget = null;
-        for (const el of elements) {
-            if ((el.classList.contains('segment') || el.classList.contains('op-slot')) && 
-                el.classList.contains('empty') && el !== this.draggedSlot) {
-                dropTarget = el;
-                break;
+        let minDst = Infinity;
+        const threshold = 60; // Радиус захвата в пикселях
+
+        emptySlots.forEach(slot => {
+            const rect = slot.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const dst = Math.hypot(x - centerX, y - centerY);
+            
+            if (dst < minDst && dst < threshold) {
+                minDst = dst;
+                dropTarget = slot;
             }
-        }
+        });
 
         if (dropTarget) {
             dropTarget.classList.remove('empty', 'highlight');
