@@ -640,7 +640,8 @@ header {
         grid-area: 2 / 2 / 3 / 3;
         margin: 0;
         padding: 15px;
-        transform: scale(0.7); /* Smaller scale for landscape to fit new huge digits */
+        /* Transform managed by JS fitToScreen */
+        transform-origin: center center;
     }
 
     .game-controls {

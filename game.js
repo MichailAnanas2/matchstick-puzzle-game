@@ -177,6 +177,9 @@ class Game {
         this.initUI();
         updateUILabels();
         this.showScreen('start');
+        
+        // Initial fit
+        window.addEventListener('resize', () => this.fitToScreen());
     }
 
     initUI() {
@@ -205,6 +208,11 @@ class Game {
         document.getElementById(`screen-${name}`).classList.add('active');
         if (name === 'start' && this.currentIndex > 0) {
             document.getElementById('btn-continue').classList.remove('hidden');
+        }
+        
+        if (name === 'game') {
+            // Need a slight delay to ensure rendering is done/visible for measurements
+            setTimeout(() => this.fitToScreen(), 50);
         }
     }
 
@@ -241,6 +249,51 @@ class Game {
         }
     }
 
+    // ===== SCALING LOGIC =====
+    fitToScreen() {
+        const field = document.getElementById('match-field');
+        if (!field) return;
+        
+        // Reset scale to measure natural dimensions
+        field.style.transform = 'none';
+        
+        // Get natural dimensions
+        const naturalWidth = field.scrollWidth;
+        const naturalHeight = field.scrollHeight;
+        
+        if (naturalWidth === 0 || naturalHeight === 0) return;
+
+        const screenW = window.innerWidth;
+        const screenH = window.innerHeight;
+        
+        // Margins for UI
+        const marginX = 20;
+        
+        // Check orientation
+        const isLandscape = screenW > screenH;
+        
+        // Vertical margin estimation
+        // In portrait: Header (~100) + Instruction (~60) + Controls (~80) + padding (~40) = ~280
+        // In landscape: Header/Controls are side/grid based. But we want to ensure it fits.
+        // Let's use a dynamic approach.
+        const marginY = isLandscape ? 40 : 280; 
+        
+        const availableW = screenW - marginX;
+        const availableH = screenH - marginY;
+        
+        const scaleX = availableW / naturalWidth;
+        const scaleY = availableH / naturalHeight;
+        
+        let scale = Math.min(scaleX, scaleY);
+        
+        // Limit max scale to 1.0 (native large size is big enough)
+        if (scale > 1) scale = 1;
+        // Prevent too small scale
+        if (scale < 0.3) scale = 0.3;
+        
+        field.style.transform = `scale(${scale})`;
+    }
+
     // ===== RENDERING =====
     renderEquation(equation) {
         const field = document.getElementById('match-field');
@@ -260,6 +313,9 @@ class Game {
 
         // Save initial state
         this.saveState();
+        
+        // Recalculate layout
+        this.fitToScreen();
     }
 
     renderDigit(container, digit, tokenIdx) {
