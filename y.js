@@ -13,10 +13,22 @@ async function initYandex() {
             try {
                 lb = await ysdk.getLeaderboards();
             } catch (e) {}
+            
+            // Сообщаем платформе, что игра загрузилась
+            if (ysdk.features && ysdk.features.LoadingAPI) {
+                ysdk.features.LoadingAPI.ready();
+            }
+            
             console.log("Yandex SDK Initialized");
         }
     } catch (e) {
         console.warn("Yandex SDK failed, using fallback", e);
+    }
+}
+
+function startGameplay() {
+    if (ysdk && ysdk.features && ysdk.features.GameplayAPI) {
+        ysdk.features.GameplayAPI.start();
     }
 }
 

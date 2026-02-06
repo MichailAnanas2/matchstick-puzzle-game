@@ -1,6 +1,6 @@
 const I18N = {
     ru: {
-        title: "Спички: Тренировка",
+        title: "Тренировка мозга спички",
         play: "Играть",
         continue: "Продолжить",
         check: "Проверить",
@@ -18,7 +18,7 @@ const I18N = {
         yourBest: "Ваш лучший"
     },
     en: {
-        title: "Matchstick Brain",
+        title: "Brain training: matchsticks",
         play: "Play",
         continue: "Continue",
         check: "Check",

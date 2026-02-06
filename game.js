@@ -231,6 +231,7 @@ class Game {
         document.getElementById('label-puzzle-index').innerText = `${t('task')} ${index + 1} / 100`;
         this.showScreen('game');
         this.loadRecords(index + 1);
+        startGameplay(); // Inform SDK
     }
 
     resetPuzzle() {
@@ -642,6 +643,9 @@ class Game {
 
 // ===== INIT =====
 window.onload = async () => {
+    // Disable context menu
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
     await initYandex();
     window.game = new Game();
 };
