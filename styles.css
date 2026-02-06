@@ -346,6 +346,22 @@ button.text-btn {
     padding: 10px 20px;
 }
 
+/* Menu Button Position (Global) */
+#btn-back {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    margin: 0;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: var(--text);
+    font-weight: 600;
+    border-radius: 12px;
+    z-index: 100;
+}
+
 button.reward-btn { 
     background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
     color: white;
@@ -362,6 +378,8 @@ header {
     align-items: flex-start; 
     margin-bottom: 20px;
     padding: 20px;
+    /* Extra padding on right for the Menu button */
+    padding-right: 100px; 
     background: var(--card-bg);
     backdrop-filter: blur(10px);
     border-radius: 16px;
@@ -504,56 +522,71 @@ header {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 600px) {
     #match-field { 
-        padding: 25px 15px;
+        padding: 40px 10px;
         gap: 8px;
     }
     
+    /* Digit container (1.5x larger: 44x80 -> 66x120) */
     .digit {
-        width: 36px;
-        height: 62px;
+        width: 66px;
+        height: 120px;
     }
     
+    /* Segments (1.5x) */
     .segment.h {
-        width: 22px;
-        height: 6px;
+        width: 42px;
+        height: 10px;
     }
     
     .segment.v {
-        width: 6px;
-        height: 22px;
+        width: 10px;
+        height: 45px;
     }
     
-    .segment.seg-a { top: 0; left: 7px; }
-    .segment.seg-b { top: 7px; left: 30px; }
-    .segment.seg-c { top: 33px; left: 30px; }
-    .segment.seg-d { top: 56px; left: 7px; }
-    .segment.seg-e { top: 33px; left: 0; }
-    .segment.seg-f { top: 7px; left: 0; }
-    .segment.seg-g { top: 28px; left: 7px; }
+    /* Positions updated for 66x120 size */
+    .segment.seg-a { top: 0; left: 12px; }
+    .segment.seg-b { top: 12px; left: 56px; }
+    .segment.seg-c { top: 67px; left: 56px; }
+    .segment.seg-d { top: 110px; left: 12px; }
+    .segment.seg-e { top: 67px; left: 0; }
+    .segment.seg-f { top: 12px; left: 0; }
+    .segment.seg-g { top: 55px; left: 12px; }
     
     .segment.active::before {
-        width: 9px;
-        height: 9px;
+        width: 14px;
+        height: 14px;
     }
     
+    /* Operator */
     .operator {
-        width: 30px;
-        height: 62px;
+        width: 50px;
+        height: 120px;
     }
     
-    .op-slot.h { width: 22px; height: 6px; top: 28px; left: 4px; }
-    .op-slot.v { width: 6px; height: 22px; top: 20px; left: 12px; }
+    .op-slot.h { width: 42px; height: 10px; top: 55px; left: 4px; }
+    .op-slot.v { width: 10px; height: 45px; top: 38px; left: 20px; }
     
-    .equals { width: 30px; height: 62px; gap: 10px; }
-    .eq-bar { width: 22px; height: 6px; }
+    .op-slot.active::before {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* Equals */
+    .equals { width: 50px; height: 120px; gap: 18px; }
+    .eq-bar { width: 42px; height: 10px; }
     
     button {
         padding: 14px 24px;
         font-size: 16px;
     }
     
-    #label-puzzle-index { font-size: 18px; }
-    #game-timer { font-size: 24px; }
+    #label-puzzle-index { font-size: 20px; }
+    #game-timer { font-size: 26px; }
+    
+    /* Ensure drag ghost matches new size */
+    #drag-ghost.v { width: 10px; height: 45px; }
+    #drag-ghost.h { width: 42px; height: 10px; }
+    #drag-ghost::before { width: 14px; height: 14px; }
 }
 
 /* Landscape Mode Fixes */
@@ -588,6 +621,8 @@ header {
         padding: 15px;
         gap: 15px;
         width: 160px;
+        /* Reset padding for desktop landscape logic */
+        padding-right: 15px; 
     }
 
     #instruction {
@@ -601,7 +636,7 @@ header {
         grid-area: 2 / 2 / 3 / 3;
         margin: 0;
         padding: 15px;
-        transform: scale(0.85); /* Slightly smaller match field */
+        transform: scale(0.7); /* Smaller scale for landscape to fit new huge digits */
     }
 
     .game-controls {
@@ -614,15 +649,14 @@ header {
         font-size: 14px;
     }
 
+    /* Position back button in landscape specifically if needed, but global absolute works */
     #btn-back {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        margin: 0;
-        padding: 5px 10px;
+        top: 10px;
+        right: 10px;
+        padding: 8px 16px;
+        font-size: 14px;
     }
     
-    /* Hide some unnecessary stats in compact mode if needed */
     .leader-info { font-size: 12px; }
     #game-timer { font-size: 20px; }
 }
