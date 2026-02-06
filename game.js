@@ -173,6 +173,8 @@ class Game {
         this.draggedSlot = null;
         this.initialState = {};
         this.currentPuzzleStart = '';
+        this.isPaused = false;
+        this.pauseStart = 0;
         
         this.initUI();
         updateUILabels();
@@ -180,6 +182,31 @@ class Game {
         
         // Initial fit
         window.addEventListener('resize', () => this.fitToScreen());
+        
+        // Pause on visibility change (minimize)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.pause();
+            } else {
+                this.resume();
+            }
+        });
+    }
+
+    pause() {
+        if (this.isPaused) return;
+        this.isPaused = true;
+        this.pauseStart = Date.now();
+        clearInterval(this.timerInterval);
+    }
+
+    resume() {
+        if (!this.isPaused) return;
+        this.isPaused = false;
+        const diff = Date.now() - this.pauseStart;
+        this.startTime += diff;
+        this.timerInterval = setInterval(() => this.updateTimer(), 1000);
+        this.updateTimer();
     }
 
     initUI() {

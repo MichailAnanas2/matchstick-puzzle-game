@@ -41,20 +41,29 @@ let currentLang = null;
 
 // 1. Check URL param (Yandex Games priority)
 const urlParams = new URLSearchParams(window.location.search);
-const langParam = urlParams.get('lang');
+let langParam = urlParams.get('lang');
 
+// Функция инициализации языка из SDK (вызывается из y.js)
+function initLanguage(sdkLang) {
+    if (langParam) {
+        currentLang = langParam.startsWith('ru') ? 'ru' : 'en';
+    } else if (sdkLang) {
+        currentLang = sdkLang.startsWith('ru') ? 'ru' : 'en';
+    } else {
+        // Fallback
+        currentLang = localStorage.getItem('match_lang') || (navigator.language.startsWith('ru') ? 'ru' : 'en');
+    }
+    
+    localStorage.setItem('match_lang', currentLang);
+    document.documentElement.lang = currentLang; // Важно для SEO/браузера
+    updateUILabels();
+}
+
+// Initial check (before SDK)
 if (langParam) {
     currentLang = langParam.startsWith('ru') ? 'ru' : 'en';
-    // Save to sync with local preference
-    localStorage.setItem('match_lang', currentLang);
 } else {
-    // 2. Check LocalStorage
-    currentLang = localStorage.getItem('match_lang');
-    
-    // 3. Check System
-    if (!currentLang) {
-        currentLang = navigator.language.startsWith('ru') ? 'ru' : 'en';
-    }
+    currentLang = localStorage.getItem('match_lang') || (navigator.language.startsWith('ru') ? 'ru' : 'en');
 }
 
 function t(key) {

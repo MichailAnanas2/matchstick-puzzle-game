@@ -14,6 +14,11 @@ async function initYandex() {
                 lb = await ysdk.getLeaderboards();
             } catch (e) {}
             
+            // Инициализация языка через SDK
+            if (ysdk.environment && ysdk.environment.i18n) {
+                initLanguage(ysdk.environment.i18n.lang);
+            }
+            
             // Сообщаем платформе, что игра загрузилась
             if (ysdk.features && ysdk.features.LoadingAPI) {
                 ysdk.features.LoadingAPI.ready();
@@ -36,12 +41,17 @@ function showFullscreen(onClose) {
     if (ysdk) {
         ysdk.adv.showFullscreenAdv({
             callbacks: {
+                onOpen: () => {
+                    window.game?.pause();
+                },
                 onClose: (wasShown) => {
                     console.log("Fullscreen closed", wasShown);
+                    window.game?.resume();
                     onClose?.();
                 },
                 onError: (err) => {
                     console.error("Fullscreen error", err);
+                    window.game?.resume();
                     onClose?.();
                 }
             }
@@ -58,6 +68,7 @@ function showRewarded(onSuccess) {
             callbacks: {
                 onOpen: () => {
                     console.log('Video ad open.');
+                    window.game?.pause();
                 },
                 onRewarded: () => {
                     console.log('Rewarded!');
@@ -66,6 +77,7 @@ function showRewarded(onSuccess) {
                 },
                 onClose: () => {
                     console.log('Video ad closed.');
+                    window.game?.resume();
                     // Fallback: если реклама закрылась но награда не выдана — всё равно дать подсказку
                     // (для тестирования локально)
                     if (!rewarded) {
@@ -75,6 +87,7 @@ function showRewarded(onSuccess) {
                 },
                 onError: (e) => {
                     console.error('Error while open video ad:', e);
+                    window.game?.resume();
                     // При ошибке — всё равно показать подсказку (для локального теста)
                     onSuccess();
                 }
