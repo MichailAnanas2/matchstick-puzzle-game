@@ -231,6 +231,7 @@ class Game {
         document.getElementById('label-puzzle-index').innerText = `${t('task')} ${index + 1} / 100`;
         this.showScreen('game');
         this.loadRecords(index + 1);
+        startGameplay(); // Inform SDK
     }
 
     resetPuzzle() {
